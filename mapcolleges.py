@@ -34,30 +34,36 @@ for uni in univ_data:
                                     'lat': lat,
                                     'long': long })
 
-import folium 
-
-lons, lats, enrollments, names, addresses, males, females = [], [], [], [], [], [], []
+lons, lats, hover_text, enrollments = [], [], [], []
 
 for cor in uni_list:
     lons.append(cor['long'])
     lats.append(cor['lat'])
-    enrollments.append(cor['Total Enrollment'])
-    names.append(cor['Name'])
-    addresses.append(cor['Address'])
-    males.append(cor['Male'])
-    females.append(cor['Female'])
+    enrollment = (cor['Total Enrollment'])
+    enrollments.append(enrollment)
+    name = cor['Name']
+    address = (cor['Address'])
+    male = cor['Male']
+    female = cor['Female']
+    hover_text.append(f"Name: {name}<br>Address: {address}<br>Total Enrollment: {enrollment}<br>Male: {male}<br>Female: {female}")
 
 from plotly.graph_objs import Scattergeo, Layout
 from plotly import offline
 
-marker = {'size':[enrollment/1000 for enrollment in enrollments], 'color': enrollments,
-        'colorscale': 'blues', 'colorbar': {'title': 'Total Enrollment'}
-        }
 
-m = folium.Map(location=[lat[0], lons[0]], zoom_start=6)
-
-my_data = Scattergeo(lon=lons, lat=lats, marker=marker)
-my_layout = Layout(title='Big 12 Schools', hovermode = 'closest')
+my_data = [{
+    'type': 'scattergeo',
+    'lon': lons,
+    'lat': lats,
+    'text': hover_text,
+    'marker': {
+        'size': [e/1000 for e in enrollments],
+        'color': enrollments,
+        'colorscale': 'twilight',
+        'colorbar': {'title': 'Total Enrollment'}
+    }
+}]
+my_layout = Layout(title='Big 12 Schools')
 
 
 fig = {'data':my_data, 'layout':my_layout}
